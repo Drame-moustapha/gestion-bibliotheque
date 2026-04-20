@@ -1,18 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package sn.smd.GestionLivre.payload;
+package sn.smd.gestionbibliotheque.backend.payload;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class ResetPasswordRequest {
-    
-    private Long utilisateurId;
-    
-    private String resetPassword;
-    
+
+    @NotBlank(message = "Token obligatoire")
+    private String token;
+
+    @NotBlank(message = "Nouveau mot de passe requis")
+    private String newPassword;
 }

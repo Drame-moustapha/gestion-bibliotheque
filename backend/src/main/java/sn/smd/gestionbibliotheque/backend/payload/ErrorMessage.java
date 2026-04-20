@@ -1,20 +1,25 @@
-
-package sn.smd.GestionLivre.payload;
+package sn.smd.gestionbibliotheque.backend.payload;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
+@Builder
 public class ErrorMessage {
-    
-    private Date timestamp;
+
+    private LocalDateTime timestamp;
+
     private int status;
+
+    private String error;
+
     private String message;
-    private String description;
-    
+
+    private String path;
+
+    private String errorCode;
 }

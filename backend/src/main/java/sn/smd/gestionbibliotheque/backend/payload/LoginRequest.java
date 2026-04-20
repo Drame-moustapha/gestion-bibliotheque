@@ -1,14 +1,14 @@
-package sn.smd.GestionLivre.payload;
+package sn.smd.gestionbibliotheque.backend.payload;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class LoginRequest {
-    private String username;
-    private String password;
 
+    @NotBlank(message = "Username obligatoire")
+    private String username;
+
+    @NotBlank(message = "Password obligatoire")
+    private String password;
 }

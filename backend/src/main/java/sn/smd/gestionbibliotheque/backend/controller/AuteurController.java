@@ -1,56 +1,71 @@
-package sn.smd.GestionLivre.controller;
+package sn.smd.gestionbibliotheque.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sn.smd.GestionLivre.entity.Auteur;
-import sn.smd.GestionLivre.entity.Utilisateur;
-import sn.smd.GestionLivre.service.AuteurService;
+import sn.smd.gestionbibliotheque.backend.entity.Auteur;
+import sn.smd.gestionbibliotheque.backend.service.AuteurService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auteurs")
-@CrossOrigin(origins = {"http://localhost:3000"})
-
+@RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AuteurController {
-    @Autowired
+
     private final AuteurService auteurService;
 
-    public AuteurController(AuteurService auteurService) {
-        this.auteurService = auteurService;
-    }
+    // =========================
+    // GET ALL AUTEURS
+    // =========================
+    @GetMapping
+    public ResponseEntity<List<Auteur>> getAll() {
 
-    @GetMapping()
-    public ResponseEntity<List<Auteur>> getAllsAuteurs() {
-        List<Auteur> users = auteurService.getAllsAuteurs();
-        if (users == null || users.isEmpty()) {
+        List<Auteur> list = auteurService.getAllsAuteurs();
+
+        if (list.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(users);
+
+        return ResponseEntity.ok(list);
     }
 
+    // =========================
+    // GET BY ID
+    // =========================
     @GetMapping("/{id}")
-    public ResponseEntity<Auteur> getAuteur(@PathVariable  Long id) {
+    public ResponseEntity<Auteur> getById(@PathVariable Long id) {
         return ResponseEntity.ok(auteurService.getAuteur(id));
     }
 
+    // =========================
+    // UPDATE AUTEUR
+    // =========================
     @PutMapping("/{id}")
-    public ResponseEntity<Auteur> updateAuteur(@PathVariable  Long id, @RequestBody Auteur user) {
-        Auteur updateUser = auteurService.updateAuteur(user,id);
-        return new ResponseEntity<>(updateUser, HttpStatus.CREATED);
+    public ResponseEntity<Auteur> update(@PathVariable Long id,
+                                         @RequestBody Auteur auteur) {
+
+        return ResponseEntity.ok(
+                auteurService.updateAuteur(auteur, id)
+        );
     }
 
+    // =========================
+    // DELETE AUTEUR
+    // =========================
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuteur(@PathVariable  Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         auteurService.deleteAuteurById(id);
         return ResponseEntity.noContent().build();
     }
 
+    // =========================
+    // COUNT AUTEURS
+    // =========================
     @GetMapping("/count")
-    public ResponseEntity<Long> countAuteur() {
-        Long total = auteurService.countAuteur();
-        return ResponseEntity.ok(total);
+    public ResponseEntity<Long> count() {
+        return ResponseEntity.ok(auteurService.countAuteur());
     }
 }

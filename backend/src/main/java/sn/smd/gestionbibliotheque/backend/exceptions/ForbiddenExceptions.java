@@ -1,20 +1,24 @@
+package sn.smd.gestionbibliotheque.backend.exceptions;
 
-package sn.smd.GestionLivre.exceptions;
-
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Getter
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class ForbiddenExceptions extends RuntimeException{
-    private final String message;
+public class ForbiddenException extends RuntimeException {
 
-    public ForbiddenExceptions(String message) {
-        this.message = message;
+    private final String errorCode;
+
+    public ForbiddenException(String message) {
+        super(message);
+        this.errorCode = "FORBIDDEN_ACCESS";
     }
-    
-    
-    
-    
+
+    public ForbiddenException(String message, String errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
 }

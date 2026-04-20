@@ -1,16 +1,12 @@
-package sn.smd.GestionLivre.exceptions;
+package sn.smd.gestionbibliotheque.backend.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public class InternalServerErrorException extends RuntimeException {
 
-public class InternalServerErrorExceptions extends RuntimeException {
-    //private final String message;
-
-    public InternalServerErrorExceptions(String message) {
-
+    public InternalServerErrorException(String message) {
         super(message);
-
-        //this.message = message;
     }
 }

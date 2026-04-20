@@ -1,29 +1,24 @@
+package sn.smd.gestionbibliotheque.backend.exceptions;
 
-package sn.smd.GestionLivre.exceptions;
-
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-
-
 @ResponseStatus(HttpStatus.CONFLICT)
-@Getter
-public class ConflictExceptions extends RuntimeException{
-    private String nomRessource;
-    private String valRessource;
+public class ConflictException extends RuntimeException {
 
-    public ConflictExceptions(String nomRessource, String valRessource) {
-        super(String.format("%s %s existe déja.! ",nomRessource, valRessource));
-    }
+    private final String errorCode;
 
-
-    public ConflictExceptions(String message) {
+    public ConflictException(String message) {
         super(message);
+        this.errorCode = "CONFLICT_ERROR";
     }
-    
 
-    
- 
-    
+    public ConflictException(String message, String errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
 }

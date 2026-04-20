@@ -1,9 +1,10 @@
-package sn.smd.GestionLivre.service.envoi_email;
+package sn.smd.gestionbibliotheque.backend.service.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,60 +12,68 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-
 import java.io.IOException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-@AllArgsConstructor
-public class EnvoiEmailServiceImpl  implements EnvoiEmailService{
-    @Autowired
-    private final JavaMailSender emailSender;
+@RequiredArgsConstructor
+@Slf4j
+public class EmailServiceImpl implements EmailService {
 
+    private final JavaMailSender mailSender;
 
-    private final String emailMe = "newsletter@univ-zig.sn";
-    
+    @Value("${app.mail.from}")
+    private String fromEmail;
+
     @Override
     public void sendEmail(String to, String subject, String text) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        message.setFrom(emailMe);
-
         try {
-            emailSender.send(message);
-            System.out.println("Email sent successfully.");
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            message.setFrom(fromEmail);
+
+            mailSender.send(message);
+
+            log.info("Email envoyé à {}", to);
+
         } catch (MailException e) {
-            System.err.println("Failed to send email: " + e.getMessage());
-            // Autres actions à entreprendre en cas d'échec de l'envoi d'e-mail
+            log.error("Erreur envoi email : {}", e.getMessage());
+            throw new RuntimeException("Erreur envoi email");
         }
     }
 
     @Override
-    public void sendEmailWithAttachment(String to, String subject, String text, String filePath) throws MessagingException, IOException, MessagingException {
-        MimeMessage message = emailSender.createMimeMessage();
+    public void sendEmailWithAttachment(String to, String subject, String text, String filePath)
+            throws MessagingException, IOException {
+
+        MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text);
-        helper.setFrom(emailMe,"sunu bibliothéque ");
+        helper.setFrom(fromEmail);
 
-        // Charger le document à partir du chemin du fichier
         Path path = Paths.get(filePath);
-        byte[] documentBytes = Files.readAllBytes(path);
 
-        // Ajouter le document en pièce jointe
-        helper.addAttachment(path.getFileName().toString(), new ByteArrayResource(documentBytes));
+        if (!Files.exists(path)) {
+            throw new IOException("Fichier introuvable");
+        }
 
-        // Envoyer l'e-mail
-        emailSender.send(message);
+        byte[] fileBytes = Files.readAllBytes(path);
+
+        helper.addAttachment(
+                path.getFileName().toString(),
+                new ByteArrayResource(fileBytes)
+        );
+
+        mailSender.send(message);
+
+        log.info("Email avec pièce jointe envoyé à {}", to);
     }
-
-
 }

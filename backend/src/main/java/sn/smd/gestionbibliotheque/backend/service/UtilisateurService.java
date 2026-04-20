@@ -1,32 +1,26 @@
-package sn.smd.GestionLivre.service;
+package sn.smd.gestionbibliotheque.backend.service;
 
-import sn.smd.GestionLivre.entity.Auteur;
-import sn.smd.GestionLivre.entity.Utilisateur;
-import sn.smd.GestionLivre.model.Auteurs;
-import sn.smd.GestionLivre.payload.ChangePasswordRequest;
-import sn.smd.GestionLivre.payload.ResetPasswordRequest;
+import sn.smd.gestionbibliotheque.backend.entity.Utilisateur;
 
 import java.util.List;
 
 public interface UtilisateurService {
 
-    Utilisateur createUser(Utilisateur user);
-    Utilisateur updateUser(Utilisateur user, Long id);
-    void deleteUser(Utilisateur user);
-    void deleteUserById(Long id);
-    List<Utilisateur> getAllsUser(Boolean actif);
-    Utilisateur getUserById(Long id);
+    Utilisateur create(Utilisateur user);
+
+    Utilisateur update(Long id, Utilisateur user);
+
+    void delete(Long id);
+
+    Utilisateur getById(Long id);
+
     Utilisateur getByUsername(String username);
 
-    Utilisateur activeOuDesactiveCompte(Utilisateur compte);
+    List<Utilisateur> getAll(Boolean actif);
 
-    boolean changePassword(ChangePasswordRequest request);
+    Utilisateur toggleActive(Long id);
 
-    boolean resetPassword(ResetPasswordRequest request);
-    boolean reinitialisation(Long compteId);
-    Long countUtilisateur();
+    Utilisateur activate(Long id);
 
-    Utilisateur activerCompte(Utilisateur compte);
-    Auteur createAuteur(Auteurs auteur);
-
+    long count();
 }

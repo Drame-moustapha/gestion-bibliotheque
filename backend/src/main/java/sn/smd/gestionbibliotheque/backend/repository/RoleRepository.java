@@ -1,7 +1,7 @@
-package sn.smd.GestionLivre.repository;
+package sn.smd.gestionbibliotheque.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import sn.smd.GestionLivre.entity.Role;
+package sn.smd.gestionbibliotheque.backend.entity.Role;
 
 import java.util.Optional;
 

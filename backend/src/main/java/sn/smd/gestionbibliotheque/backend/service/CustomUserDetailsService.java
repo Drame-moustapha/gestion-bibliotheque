@@ -1,60 +1,37 @@
-package sn.smd.GestionLivre.service;
+package sn.smd.gestionbibliotheque.backend.service;
 
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
-import sn.smd.GestionLivre.entity.Role;
-import sn.smd.GestionLivre.entity.Utilisateur;
-import sn.smd.GestionLivre.repository.UtilisateurRepository;
+import sn.smd.gestionbibliotheque.backend.entity.Utilisateur;
+import sn.smd.gestionbibliotheque.backend.repository.UtilisateurRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UtilisateurRepository userRepository;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private final UtilisateurRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Utilisateur> user = Optional.ofNullable(userRepository.findByUsername(username));
-        if(user.isEmpty()) {
-            throw  new UsernameNotFoundException("No User Found");
-        }
-        
-        return new org.springframework.security.core.userdetails.User(
-                user.get().getUsername(),
-                user.get().getPassword(),
-                user.get().isActif(),
-                true,
-                true,
-                true,
-                getAuthorities(user.get().getRoles())
-        );
-    }
 
-    public Collection<? extends GrantedAuthority> getAuthorities(List<Role> roles) {
-        List<GrantedAuthority>  authorities = new ArrayList<>();
-        for(Role role: roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-        return authorities;
+        Utilisateur user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable"));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.isActif(),
+                true,
+                true,
+                true,
+                user.getRoles()
+                        .stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .collect(Collectors.toList())
+        );
     }
 }

@@ -1,47 +1,40 @@
-package sn.smd.GestionLivre.service;
+package sn.smd.gestionbibliotheque.backend.security;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
+@RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
+
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user= customUserDetailsService.loadUserByUsername(username);
-        return checkPassword(user,password);
-    }
 
-    private Authentication checkPassword(UserDetails user, String rawPassword) {
-        if(passwordEncoder.matches(rawPassword, user.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(user.getUsername(),
-                    user.getPassword(),
-                    user.getAuthorities());
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Identifiants invalides");
         }
-        else {
-            throw new BadCredentialsException("Bad Credentials");
-        }
+
+        return new UsernamePasswordAuthenticationToken(
+                user.getUsername(),
+                null,
+                user.getAuthorities()
+        );
     }
 
     @Override
-    public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+    public boolean supports(Class<?> auth) {
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(auth);
     }
 }

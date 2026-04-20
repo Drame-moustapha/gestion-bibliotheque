@@ -1,17 +1,20 @@
-package sn.smd.GestionLivre.service;
+package sn.smd.gestionbibliotheque.backend.service;
 
-import sn.smd.GestionLivre.entity.Auteur;
-import sn.smd.GestionLivre.entity.Livre;
+import sn.smd.gestionbibliotheque.backend.entity.Auteur;
 
 import java.util.List;
 
 public interface AuteurService {
 
+    Auteur create(Auteur auteur);
 
-    Auteur updateAuteur(Auteur l, Long id);
-    void deleteAuteurById(Long id);
-    Auteur getAuteur(Long id);
-    List<Auteur> getAllsAuteurs();
-    Long countAuteur();
+    Auteur update(Long id, Auteur auteur);
 
+    void delete(Long id);
+
+    Auteur getById(Long id);
+
+    List<Auteur> getAll();
+
+    long count();
 }

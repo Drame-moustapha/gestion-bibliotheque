@@ -1,14 +1,13 @@
-package sn.smd.GestionLivre.service.envoi_email;
+package sn.smd.gestionbibliotheque.backend.service.email;
 
 import jakarta.mail.MessagingException;
 
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-public interface EnvoiEmailService {
+public interface EmailService {
 
-    public void sendEmail(String to, String subject, String text);
+    void sendEmail(String to, String subject, String text);
 
-    public void sendEmailWithAttachment(String to, String subject, String text, String filePath) throws MessagingException, IOException;
- }
+    void sendEmailWithAttachment(String to, String subject, String text, String filePath)
+            throws MessagingException, IOException;
+}

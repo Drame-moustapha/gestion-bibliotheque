@@ -1,76 +1,66 @@
-package sn.smd.GestionLivre.service.Impl;
+package sn.smd.gestionbibliotheque.backend.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sn.smd.GestionLivre.entity.Auteur;
-import sn.smd.GestionLivre.entity.Livre;
-import sn.smd.GestionLivre.exceptions.NotFoundExceptions;
-import sn.smd.GestionLivre.repository.AuteurRepository;
-import sn.smd.GestionLivre.service.AuteurService;
+import sn.smd.gestionbibliotheque.backend.entity.Auteur;
+import sn.smd.gestionbibliotheque.backend.exceptions.NotFoundException;
+import sn.smd.gestionbibliotheque.backend.repository.AuteurRepository;
+import sn.smd.gestionbibliotheque.backend.service.AuteurService;
 
 import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class AuteurServiceImpl implements AuteurService {
 
-   private final AuteurRepository auteurRepository;
+    private final AuteurRepository auteurRepository;
 
-    public AuteurServiceImpl(AuteurRepository auteurRepository) {
-        this.auteurRepository = auteurRepository;
+    @Override
+    public Auteur create(Auteur auteur) {
+        return auteurRepository.save(auteur);
     }
 
-    /**
-     * @param auteur
-     * @param id
-     * @return
-     */
     @Override
-    public Auteur updateAuteur(Auteur auteur, Long id) {
-        Auteur a=this.getAuteur(id);
-        if (auteurRepository.findById(id).isPresent()) {
+    public Auteur update(Long id, Auteur auteur) {
 
-            a.setNom(auteur.getNom());
-            a.setPrenom(auteur.getPrenom());
-            a.setSexe(auteur.getSexe());
-            a.setBiographie(auteur.getBiographie());
-           // a.setUsername(aut.getUsername());
-            //a.setPassword(aut.getPassword());
-            //a.setRoles(aut.getRoles());
-            return auteurRepository.save(a);
-        }else{
-            throw new NotFoundExceptions("Auteur non existant");
-        }
+        Auteur existing = auteurRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Auteur introuvable avec id: " + id));
+
+        existing.setNom(auteur.getNom());
+        existing.setPrenom(auteur.getPrenom());
+        existing.setUsername(auteur.getUsername());
+        existing.setEmail(auteur.getEmail());
+        existing.setSexe(auteur.getSexe());
+        existing.setBiographie(auteur.getBiographie());
+        existing.setPays(auteur.getPays());
+        existing.setInstitution(auteur.getInstitution());
+        existing.setSpecialite(auteur.getSpecialite());
+
+        return auteurRepository.save(existing);
     }
 
-    /**
-     * @param id
-     */
     @Override
-    public void deleteAuteurById(Long id) {
-        Auteur auteur = this.getAuteur(id);
-        this.auteurRepository.delete(auteur);
+    public void delete(Long id) {
+
+        Auteur auteur = auteurRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Auteur introuvable avec id: " + id));
+
+        auteurRepository.delete(auteur);
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Override
-    public Auteur getAuteur(Long id) {
-        return auteurRepository.findById(id).orElseThrow(()->new NotFoundExceptions("L'auteur ayant l'id " + id + " n'existe pas"));
+    public Auteur getById(Long id) {
+        return auteurRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Auteur introuvable avec id: " + id));
     }
 
-    /**
-     * @return
-     */
     @Override
-    public List<Auteur> getAllsAuteurs() {
+    public List<Auteur> getAll() {
         return auteurRepository.findAll();
     }
 
-    /**
-     * @return
-     */
     @Override
-    public Long countAuteur() {
+    public long count() {
         return auteurRepository.count();
     }
 }

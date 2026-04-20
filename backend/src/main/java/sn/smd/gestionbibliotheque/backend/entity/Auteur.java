@@ -1,3 +1,4 @@
+sn.smd.gestionbibliotheque.backend.entity;
 @Entity
 @Data
 @NoArgsConstructor

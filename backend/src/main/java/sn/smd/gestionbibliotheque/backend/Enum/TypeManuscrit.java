@@ -1,3 +1,4 @@
+sn.smd.gestionbibliotheque.backend.Enum;
 public enum TypeManuscrit {
     LIVRE,
     MEMOIRE,

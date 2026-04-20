@@ -1,78 +1,125 @@
-package sn.smd.GestionLivre.config;
+package sn.smd.gestionbibliotheque.backend.config;
 
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.*;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import sn.smd.GestionLivre.service.CustomUserDetailsService;
+import org.springframework.security.web.*;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.cors.*;
 
+import sn.smd.gestionbibliotheque.backend.service.CustomUserDetailsService;
 
-@EnableWebSecurity
+import java.util.List;
+
 @Configuration
-
-@EnableMethodSecurity()
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
-    
-   
-    private PasswordEncoder passwordEncoder;
-    
-    
-	public WebSecurityConfig(PasswordEncoder passwordEncoder) {
-		super();
-		this.passwordEncoder = passwordEncoder;
-	}
-	
-	@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-    	
-    	return httpSecurity
-                .cors(Customizer.withDefaults())
-                .csrf(csrf ->csrf.disable() )
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               // .headers(h->h.frameOptions().disable())
-                .authorizeHttpRequests(ar->ar.requestMatchers("/.well-known/jwks.json","/swagger-ui/**","/v3/**", "/public/**","/actuator/**").permitAll())
-                .authorizeHttpRequests(ar->ar.requestMatchers("/api/v1/utilisateurs/**","/api/v1/login/**","/api/v1/auth/login/**").permitAll())
-                .authorizeHttpRequests(ar->ar.anyRequest().authenticated())
-                .oauth2ResourceServer(cust -> cust.jwt(Customizer.withDefaults()))
-                .exceptionHandling(ex-> ex
-                        .authenticationEntryPoint(null)
-                        .accessDeniedHandler(null)
+
+    private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService userDetailsService;
+
+    // =========================
+    // SECURITY FILTER CHAIN
+    // =========================
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+                // CORS SAFE
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // CSRF OFF (JWT)
+                .csrf(csrf -> csrf.disable())
+
+                // STATELESS API
+                .sessionManagement(sm ->
+                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .build();
+
+                // =========================
+                // PUBLIC ROUTES
+                // =========================
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/utilisateurs/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/actuator/**"
+                        ).permitAll()
+
+                        // PRIVATE ROUTES
+                        .requestMatchers("/api/v1/**").authenticated()
+
+                        .anyRequest().authenticated()
+                )
+
+                // =========================
+                // JWT RESOURCE SERVER
+                // =========================
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt()
+                )
+
+                // =========================
+                // SECURITY ERRORS HANDLING
+                // =========================
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(
+                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
+                        )
+                        .accessDeniedHandler((req, res, ex2) ->
+                                res.sendError(HttpStatus.FORBIDDEN.value(), "Accès refusé")
+                        )
+                );
+
+        return http.build();
     }
+
+    // =========================
+    // AUTH MANAGER
+    // =========================
     @Bean
-    CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration corsConfiguration=new CorsConfiguration();
-        corsConfiguration.addExposedHeader("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.addAllowedOrigin("*");
-        UrlBasedCorsConfigurationSource corsConfigurationSource=new UrlBasedCorsConfigurationSource();
-        corsConfigurationSource.registerCorsConfiguration("/**",corsConfiguration);
-        return corsConfigurationSource;
+    public AuthenticationManager authenticationManager() {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService);
+        provider.setHideUserNotFoundExceptions(false);
+
+        return new ProviderManager(provider);
     }
 
-
+    // =========================
+    // CORS CONFIG (SAFE VERSION)
+    // =========================
     @Bean
-    public AuthenticationManager authenticationManager(CustomUserDetailsService userDetailsService){
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        daoAuthenticationProvider.setHideUserNotFoundExceptions(false);
-        return new ProviderManager(daoAuthenticationProvider);
-    }
+    public CorsConfigurationSource corsConfigurationSource() {
 
-    
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://localhost:3000"
+        ));
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 }

@@ -1,68 +1,85 @@
-package sn.smd.GestionLivre.config;
+package sn.smd.gestionbibliotheque.backend.config;
 
-import org.springframework.security.config.Customizer;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.source.*;
+import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.context.annotation.*;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.*;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 
-//@Configuration(proxyBeanMethods = false)
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.UUID;
+
+@Configuration
 public class AuthorizationServerConfig {
 
+	private final PasswordEncoder passwordEncoder;
 
-   // @Autowired
-    private PasswordEncoder passwordEncoder;
+	public AuthorizationServerConfig(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
 
-   // @Bean
-    //@Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+	// =========================
+	// SECURITY FILTER CHAIN
+	// =========================
+	@Bean
+	public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.formLogin(Customizer.withDefaults()).build();
-    }
-/*
-   // @Bean
-    public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("api-client")
-                .clientSecret(passwordEncoder.encode("secret"))
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("http://127.0.0.1:8080/login/oauth2/code/api-client-oidc")
-                .redirectUri("http://127.0.0.1:8080/authorized")
-                .scope(OidcScopes.OPENID)
-                .scope("api.read")
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-                .build();
+		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
+		return http
+				.formLogin(Customizer.withDefaults())
+				.build();
+	}
 
-        return new InMemoryRegisteredClientRepository(registeredClient);
-    }
-*/
-	/*
-	 * @Bean public JWKSource<SecurityContext> jwkSource() { RSAKey rsaKey =
-	 * generateRsa(); JWKSet jwkSet = new JWKSet(rsaKey); return (jwkSelector,
-	 * securityContext) -> jwkSelector.select(jwkSet); }
-	 * 
-	 * private static RSAKey generateRsa() { KeyPair keyPair = generateRsaKey();
-	 * RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic(); RSAPrivateKey
-	 * privateKey = (RSAPrivateKey) keyPair.getPrivate(); return new
-	 * RSAKey.Builder(publicKey) .privateKey(privateKey)
-	 * .keyID(UUID.randomUUID().toString()) .build(); }
-	 * 
-	 * private static KeyPair generateRsaKey() { KeyPair keyPair; try {
-	 * KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-	 * keyPairGenerator.initialize(2048); keyPair =
-	 * keyPairGenerator.generateKeyPair(); } catch (Exception ex) { throw new
-	 * IllegalStateException(ex); } return keyPair; }
-	 */
-/*
-    @Bean
-    public ProviderSettings providerSettings() {
-        return ProviderSettings.builder()
-                .issuer("http://auth-server:9000")
-                .build();
-    }*/
+	// =========================
+	// JWT KEYS (RSA)
+	// =========================
+	@Bean
+	public JWKSource<SecurityContext> jwkSource() {
+		RSAKey rsaKey = generateRsaKey();
+		JWKSet jwkSet = new JWKSet(rsaKey);
+
+		return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+	}
+
+	private RSAKey generateRsaKey() {
+		KeyPair keyPair = generateKeyPair();
+
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+		return new RSAKey.Builder(publicKey)
+				.privateKey(privateKey)
+				.keyID(UUID.randomUUID().toString())
+				.build();
+	}
+
+	private KeyPair generateKeyPair() {
+		try {
+			KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+			generator.initialize(2048);
+			return generator.generateKeyPair();
+		} catch (Exception e) {
+			throw new IllegalStateException("Erreur génération clé RSA", e);
+		}
+	}
+
+	// =========================
+	// ISSUER CONFIG
+	// =========================
+	@Bean
+	public AuthorizationServerSettings authorizationServerSettings() {
+		return AuthorizationServerSettings.builder()
+				.issuer("http://localhost:8080")
+				.build();
+	}
 }

@@ -1,28 +1,56 @@
-package sn.smd.GestionLivre.config;
+package sn.smd.gestionbibliotheque.backend.config;
 
-
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.*;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-@Component
-public class CORSCustomizer {
+@Configuration
+public class CorsConfig {
 
-  public void corsCustomizer(HttpSecurity http) throws Exception {
-    http.cors(c -> {
-      CorsConfigurationSource source = s -> {
-        CorsConfiguration cc = new CorsConfiguration();
-        cc.setAllowCredentials(true);
-        cc.setAllowedOrigins(List.of("*"));
-        cc.setAllowedHeaders(List.of("*"));
-        cc.setAllowedMethods(List.of("*"));
-        return cc;
-      };
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
 
-      c.configurationSource(source);
-    });
+    CorsConfiguration config = new CorsConfiguration();
+
+    // =========================
+    // FRONTEND AUTHORIZED
+    // =========================
+    config.setAllowedOrigins(List.of(
+            "http://localhost:3000",  // React
+            "http://localhost:4200"   // Angular
+    ));
+
+    // =========================
+    // METHODS
+    // =========================
+    config.setAllowedMethods(List.of(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "PATCH",
+            "OPTIONS"
+    ));
+
+    // =========================
+    // HEADERS
+    // =========================
+    config.setAllowedHeaders(List.of("*"));
+
+    // =========================
+    // AUTH SUPPORT
+    // =========================
+    config.setAllowCredentials(true);
+
+    // =========================
+    // GLOBAL CONFIG
+    // =========================
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+
+    return source;
   }
 }

@@ -1,35 +1,100 @@
-sn.smd.gestionbibliotheque.backend.entity;
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Data
-@NoArgsConstructor
+package sn.smd.gestionbibliotheque.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+@Getter
+@Setter
 @AllArgsConstructor
-public class Utilisateur {
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "utilisateur")
+public class Utilisateur implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;
-    private String prenom;
-
-    @Column(unique = true, nullable = false)
-    private String username;
-
-    private String email;
-
-    private String sexe;
-
     @Column(nullable = false)
     private String password;
 
-    private boolean actif = true;
+    @Column(nullable = false)
+    private String nom;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private String prenom;
 
-    private LocalDateTime lastLogin;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    // ROLE
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> roles = new ArrayList<>();
+    @Column(nullable = false)
+    private Boolean actif = false;
+
+    @Column(nullable = false)
+    private String adresse;
+
+    @Column(nullable = false)
+    private String sexe;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Role role;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dateCreation;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime dateModification;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == null) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.role.getLibelle()));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.actif;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.actif;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.actif;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.actif;
+    }
 }

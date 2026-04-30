@@ -7,13 +7,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.cors.*;
 
-import sn.smd.gestionbibliotheque.backend.service.CustomUserDetailsService;
 
 import java.util.List;
 
@@ -22,8 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final PasswordEncoder passwordEncoder;
-    private final CustomUserDetailsService userDetailsService;
+    private PasswordEncoder passwordEncoder;
 
     // =========================
     // SECURITY FILTER CHAIN
@@ -64,9 +63,9 @@ public class WebSecurityConfig {
                 // =========================
                 // JWT RESOURCE SERVER
                 // =========================
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt()
-                )
+//                .oauth2ResourceServer(oauth2 ->
+//                        oauth2.jwt()
+//                )
 
                 // =========================
                 // SECURITY ERRORS HANDLING
@@ -86,17 +85,17 @@ public class WebSecurityConfig {
     // =========================
     // AUTH MANAGER
     // =========================
-    @Bean
-    public AuthenticationManager authenticationManager() {
-
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userDetailsService);
-        provider.setHideUserNotFoundExceptions(false);
-
-        return new ProviderManager(provider);
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager() {
+//
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//
+//        provider.setPasswordEncoder(passwordEncoder);
+//        provider.setUserDetailsService(userDetailsService);
+//        provider.setHideUserNotFoundExceptions(false);
+//
+//        return new ProviderManager(provider);
+//    }
 
     // =========================
     // CORS CONFIG (SAFE VERSION)
@@ -121,5 +120,9 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

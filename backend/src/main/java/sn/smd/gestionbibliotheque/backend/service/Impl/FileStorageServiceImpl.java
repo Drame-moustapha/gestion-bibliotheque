@@ -1,4 +1,4 @@
-package sn.smd.gestionbibliotheque.backend.service.impl;
+package sn.smd.gestionbibliotheque.backend.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

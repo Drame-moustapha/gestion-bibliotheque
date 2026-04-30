@@ -1,4 +1,4 @@
-package sn.smd.gestionbibliotheque.backend.service.impl;
+package sn.smd.gestionbibliotheque.backend.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,17 @@ public class ManuscritServiceImpl implements ManuscritService {
 
     @Override
     public List<Manuscrit> getByAuteur(Long auteurId) {
-        return manuscritRepository.findByAuteurId(auteurId);
+        return manuscritRepository.findAllByAuteurId(auteurId);
+    }
+
+    @Override
+    public List<Manuscrit> getPayants() {
+        return List.of();
+    }
+
+    @Override
+    public List<Manuscrit> searchByTitre(String keyword) {
+        return List.of();
     }
 
     @Override

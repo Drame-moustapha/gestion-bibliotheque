@@ -1,14 +1,19 @@
-sn.smd.gestionbibliotheque.backend.entity;
-@Entity
-@Data
-@NoArgsConstructor
+package sn.smd.gestionbibliotheque.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name="role")
 public class Role {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-
-    @Column(unique = true)
-    private String name; // ADMIN, USER, AUTEUR, MODERATEUR
+    @Enumerated(EnumType.STRING)
+    private TypeDeRole libelle;
 }

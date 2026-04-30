@@ -4,16 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class ConflictException extends RuntimeException {
+public class ConflictExceptions extends RuntimeException {
 
     private final String errorCode;
 
-    public ConflictException(String message) {
+    public ConflictExceptions(String message) {
         super(message);
         this.errorCode = "CONFLICT_ERROR";
     }
 
-    public ConflictException(String message, String errorCode) {
+    public ConflictExceptions(String message, String errorCode) {
         super(message);
         this.errorCode = errorCode;
     }

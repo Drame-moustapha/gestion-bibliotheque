@@ -1,4 +1,13 @@
-sn.smd.gestionbibliotheque.backend.entity;
+package sn.smd.gestionbibliotheque.backend.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import sn.smd.gestionbibliotheque.backend.Enum.TypeManuscrit;
+
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor

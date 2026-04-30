@@ -23,7 +23,7 @@ public class AuteurController {
     @GetMapping
     public ResponseEntity<List<Auteur>> getAll() {
 
-        List<Auteur> list = auteurService.getAllsAuteurs();
+        List<Auteur> list = auteurService.getAll();
 
         if (list.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -37,7 +37,7 @@ public class AuteurController {
     // =========================
     @GetMapping("/{id}")
     public ResponseEntity<Auteur> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(auteurService.getAuteur(id));
+        return ResponseEntity.ok(auteurService.getById(id));
     }
 
     // =========================
@@ -48,7 +48,7 @@ public class AuteurController {
                                          @RequestBody Auteur auteur) {
 
         return ResponseEntity.ok(
-                auteurService.updateAuteur(auteur, id)
+                auteurService.update(id, auteur)
         );
     }
 
@@ -57,7 +57,7 @@ public class AuteurController {
     // =========================
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        auteurService.deleteAuteurById(id);
+        auteurService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -66,6 +66,6 @@ public class AuteurController {
     // =========================
     @GetMapping("/count")
     public ResponseEntity<Long> count() {
-        return ResponseEntity.ok(auteurService.countAuteur());
+        return ResponseEntity.ok(auteurService.count());
     }
 }

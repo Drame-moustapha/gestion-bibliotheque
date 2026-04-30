@@ -19,56 +19,56 @@ import java.util.Map;
 @Slf4j
 public class AuthController {
 
-    private final AuthService authService;
-    private final AuthenticationManager authenticationManager;
-
-    // =========================
-    // LOGIN (PRODUCTION ENDPOINT)
-    // =========================
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
-        log.info("Login attempt: {}", request.getUsername());
-
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()
-                    )
-            );
-
-            String username = authentication.getName();
-
-            Map<String, String> token = authService.generateToken(username);
-
-            log.info("Login success: {}", username);
-
-            return ResponseEntity.ok(token);
-
-        } catch (BadCredentialsException e) {
-
-            log.warn("Bad credentials for user: {}", request.getUsername());
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Identifiants incorrects");
-
-        } catch (DisabledException e) {
-
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Compte désactivé");
-
-        } catch (LockedException e) {
-
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Compte verrouillé");
-
-        } catch (Exception e) {
-
-            log.error("Login error", e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur serveur");
-        }
-    }
+//    private final AuthService authService;
+//    private final AuthenticationManager authenticationManager;
+//
+//    // =========================
+//    // LOGIN (PRODUCTION ENDPOINT)
+//    // =========================
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+//
+//        log.info("Login attempt: {}", request.getUsername());
+//
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            request.getUsername(),
+//                            request.getPassword()
+//                    )
+//            );
+//
+//            String username = authentication.getName();
+//
+////            Map<String, String> token = authService.generateToken(username);
+//
+//            log.info("Login success: {}", username);
+//
+//            return ResponseEntity.ok(token);
+//
+//        } catch (BadCredentialsException e) {
+//
+//            log.warn("Bad credentials for user: {}", request.getUsername());
+//
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body("Identifiants incorrects");
+//
+//        } catch (DisabledException e) {
+//
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("Compte désactivé");
+//
+//        } catch (LockedException e) {
+//
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body("Compte verrouillé");
+//
+//        } catch (Exception e) {
+//
+//            log.error("Login error", e);
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Erreur serveur");
+//        }
+//    }
 }

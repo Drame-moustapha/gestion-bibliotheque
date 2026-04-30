@@ -52,20 +52,20 @@ public class ManuscritController {
     // GET BY AUTHOR
     @GetMapping("/auteur/{id}")
     public ResponseEntity<List<Manuscrit>> getByAuthor(@PathVariable Long id) {
-        return ResponseEntity.ok(manuscritService.getByAuthor(id));
+        return ResponseEntity.ok(manuscritService.getByAuteur(id));
     }
 
     // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Manuscrit> update(@PathVariable Long id,
                                             @RequestBody Manuscrit manuscrit) {
-        return ResponseEntity.ok(manuscritService.update(manuscrit, id));
+        return ResponseEntity.ok(manuscritService.update(id, manuscrit));
     }
 
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        manuscritService.deleteById(id);
+        manuscritService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

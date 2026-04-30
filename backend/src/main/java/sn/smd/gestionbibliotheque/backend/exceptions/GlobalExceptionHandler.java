@@ -16,8 +16,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException ex,
+    @ExceptionHandler(NotFoundExceptions.class)
+    public ResponseEntity<ErrorMessage> handleNotFound(NotFoundExceptions ex,
                                                        HttpServletRequest request) {
 
         return buildError(
@@ -28,8 +28,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorMessage> handleConflict(ConflictException ex,
+    @ExceptionHandler(ConflictExceptions.class)
+    public ResponseEntity<ErrorMessage> handleConflict(ConflictExceptions ex,
                                                        HttpServletRequest request) {
 
         return buildError(
@@ -40,8 +40,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorMessage> handleBadRequest(BadRequestException ex,
+    @ExceptionHandler(BadRequestExceptions.class)
+    public ResponseEntity<ErrorMessage> handleBadRequest(BadRequestExceptions ex,
                                                          HttpServletRequest request) {
 
         return buildError(

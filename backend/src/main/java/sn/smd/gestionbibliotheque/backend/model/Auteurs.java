@@ -1,7 +1,8 @@
+package sn.smd.gestionbibliotheque.backend.model;
 
-sn.smd.gestionbibliotheque.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
+import sn.smd.gestionbibliotheque.backend.entity.Role;
 
 
 import java.util.ArrayList;

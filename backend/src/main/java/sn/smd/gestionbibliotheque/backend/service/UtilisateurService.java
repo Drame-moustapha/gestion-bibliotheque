@@ -3,6 +3,7 @@ package sn.smd.gestionbibliotheque.backend.service;
 import sn.smd.gestionbibliotheque.backend.entity.Utilisateur;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UtilisateurService {
 
@@ -20,7 +21,7 @@ public interface UtilisateurService {
 
     Utilisateur toggleActive(Long id);
 
-    Utilisateur activate(Long id);
+    public Utilisateur activate(Map<String, String> activation);
 
     long count();
 }

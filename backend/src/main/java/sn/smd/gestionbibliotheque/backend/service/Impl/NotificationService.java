@@ -21,7 +21,7 @@ public class NotificationService {
         try {
             helper.setFrom("martialmauricediatta@gmail.com");
             helper.setTo(validation.getUtilisateur().getEmail());
-            helper.setSubject("🔐 Votre code d'activation - Bienvenue !");
+            helper.setSubject("🔐 Votre code d'activation de compte");
 
             String htmlContent = String.format(
                     "<!DOCTYPE html>" +

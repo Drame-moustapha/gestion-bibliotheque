@@ -10,10 +10,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Getter
 @Setter
@@ -41,7 +39,7 @@ public class Utilisateur implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private Boolean actif = false;
+    private Boolean status = false;
 
     @Column(nullable = false)
     private String adresse;
@@ -80,21 +78,21 @@ public class Utilisateur implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.actif;
+        return this.status;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.actif;
+        return this.status;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.actif;
+        return this.status;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.actif;
+        return this.status;
     }
 }

@@ -1,19 +1,15 @@
 package sn.smd.gestionbibliotheque.backend.service.Impl;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sn.smd.gestionbibliotheque.backend.entity.Role;
 import sn.smd.gestionbibliotheque.backend.entity.TypeDeRole;
 import sn.smd.gestionbibliotheque.backend.entity.Utilisateur;
 import sn.smd.gestionbibliotheque.backend.entity.Validation;
-import sn.smd.gestionbibliotheque.backend.exceptions.ConflictExceptions;
 import sn.smd.gestionbibliotheque.backend.exceptions.NotFoundExceptions;
 import sn.smd.gestionbibliotheque.backend.repository.RoleRepository;
 import sn.smd.gestionbibliotheque.backend.repository.UtilisateurRepository;
@@ -58,7 +54,7 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
                 .orElseThrow(() -> new RuntimeException("Role USER introuvable"));
 
         utilisateur.setRole(roleUtilisateur);
-        utilisateur.setActif(false);
+        utilisateur.setStatus(false);
 
         utilisateur = utilisateurRepository.save(utilisateur);
 
@@ -76,6 +72,7 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
         existing.setNom(user.getNom());
         existing.setPrenom(user.getPrenom());
         existing.setSexe(user.getSexe());
+        existing.setAdresse(user.getAdresse());
 
         return utilisateurRepository.save(existing);
     }
@@ -110,7 +107,7 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
 
         return utilisateurRepository.findAll()
                 .stream()
-//                .filter(u -> u.isActif() == actif)
+                .filter(u -> u.getStatus() == actif)
                 .toList();
     }
 
@@ -118,7 +115,7 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
     public Utilisateur toggleActive(Long id) {
 
         Utilisateur user = getById(id);
-//        user.setActif(!user.isActif());
+        user.setStatus(!user.getStatus());
 
         return utilisateurRepository.save(user);
     }
@@ -135,7 +132,7 @@ public class UtilisateurServiceImpl implements UtilisateurService, UserDetailsSe
 
         Utilisateur utilisateurActiver = validation.getUtilisateur();
 
-        utilisateurActiver.setActif(true);
+        utilisateurActiver.setStatus(true);
 
         // 🔥 Marquer comme activé
         validation.setActivation(Instant.now());

@@ -17,6 +17,14 @@ public class AuteurController {
 
     private final AuteurService auteurService;
 
+    @PostMapping("/inscrire")
+    public ResponseEntity<Auteur> createAuteur(@RequestBody Auteur auteur) {
+        return new ResponseEntity<>(
+                auteurService.create(auteur),
+                HttpStatus.CREATED
+        );
+    }
+
     // =========================
     // GET ALL AUTEURS
     // =========================

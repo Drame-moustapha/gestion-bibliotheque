@@ -24,7 +24,7 @@ public class UtilisateurController {
     // =========================
     // CREATE USER
     // =========================
-    @PostMapping
+    @PostMapping(path = "/inscrire")
     public ResponseEntity<Utilisateur> createUser(@RequestBody Utilisateur user) {
         return new ResponseEntity<>(
                 utilisateurService.create(user),
@@ -32,7 +32,7 @@ public class UtilisateurController {
         );
     }
 
-    @PostMapping(path = "activation")
+    @PostMapping(path = "/activation")
     public ResponseEntity<Utilisateur> activation(@RequestBody Map<String, String> activation){
         Utilisateur save = utilisateurService.activate(activation);
         return ResponseEntity.status(HttpStatus.CREATED).body(save);

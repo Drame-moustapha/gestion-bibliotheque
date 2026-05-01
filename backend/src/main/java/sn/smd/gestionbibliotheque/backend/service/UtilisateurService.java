@@ -21,7 +21,7 @@ public interface UtilisateurService {
 
     Utilisateur toggleActive(Long id);
 
-    public Utilisateur activate(Map<String, String> activation);
+    Utilisateur activate(Map<String, String> activation);
 
     long count();
 }

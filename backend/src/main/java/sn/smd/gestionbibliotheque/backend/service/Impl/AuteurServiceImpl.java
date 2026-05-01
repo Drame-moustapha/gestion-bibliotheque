@@ -17,6 +17,7 @@ public class AuteurServiceImpl implements AuteurService {
 
     @Override
     public Auteur create(Auteur auteur) {
+
         return auteurRepository.save(auteur);
     }
 
@@ -26,11 +27,6 @@ public class AuteurServiceImpl implements AuteurService {
         Auteur existing = auteurRepository.findById(id)
                 .orElseThrow(() -> new NotFoundExceptions("Auteur introuvable avec id: " + id));
 
-        existing.setNom(auteur.getNom());
-        existing.setPrenom(auteur.getPrenom());
-//        existing.setUsername(auteur.getUsername());
-        existing.setEmail(auteur.getEmail());
-        existing.setSexe(auteur.getSexe());
         existing.setBiographie(auteur.getBiographie());
         existing.setPays(auteur.getPays());
         existing.setInstitution(auteur.getInstitution());

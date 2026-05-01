@@ -1,8 +1,6 @@
 package sn.smd.gestionbibliotheque.backend.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Auteur extends Utilisateur {
+public class Auteur {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "utilisateur_id", nullable = false, unique = true)
+    private Utilisateur utilisateur;
 
     private String biographie;
 
@@ -24,7 +30,6 @@ public class Auteur extends Utilisateur {
 
     private String specialite;
 
-    // relation corrigée
-    @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Manuscrit> manuscrits = new ArrayList<>();
 }
